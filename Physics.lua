@@ -6,15 +6,11 @@ local Physics ={
         Body.velx = 0
         Body.vely = 0
         Body.acc = a
-        Body.maxSpeed = 2.316
+        Body.maxSpeed = 3.116
 
         function Body:Intergrate(dt, dirx, diry)
             self.velx = self.velx + self.acc * dt * dirx
             self.vely = self.vely + self.acc * dt * diry
-
-            local speed = self.velx + self.vely
-
-            -- TODO fix cap diag movespeed
 
             if self.velx > self.maxSpeed then
                 self.velx = self.maxSpeed
@@ -31,7 +27,17 @@ local Physics ={
 
             self.x = self.x + self.velx * dt * 100
             self.y = self.y + self.vely * dt * 100
-
+            
+            if math.abs(self.velx) > 0.0114 * self.acc then 
+                self.velx = self.velx - self.velx * dt * self.acc / 9
+            else
+                self.velx = 0
+            end
+            if math.abs(self.vely) > 0.0114 * self.acc then
+                self.vely = self.vely - self.vely * dt * self.acc / 9
+            else
+                self.vely = 0
+            end
         end
         return Body
     end,

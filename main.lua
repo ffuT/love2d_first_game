@@ -12,10 +12,10 @@ function love.load()
     
     Player = {
         health = 100,
-        body = Physics.newBody(WIDTH/2, HEIGHT/2,12.25),
-        collider = Physics.newSphereCollider(WIDTH/2, HEIGHT/2, 20),
+        body = Physics.newBody(WIDTH/2, HEIGHT/2, 22.25),
+        collider = Physics.newSphereCollider(WIDTH/2, HEIGHT/2, 25),
     }
-    Player.body.maxSpeed = 4.2069
+    Player.body.maxSpeed = 2.2069
 
     love.window.setMode(WIDTH, HEIGHT)
     --love.window.setVSync(0)
@@ -23,7 +23,6 @@ end
 
 function love.update(dt)
     DeltaTime = dt
-    local moving = false
 
     -- Player Accel
     local dirx = 0
@@ -31,44 +30,33 @@ function love.update(dt)
 
     -- keyboard handling --
     if love.keyboard.isDown("w") then
-        diry = -1
-        moving = true
+        diry = diry -1
     end
     if love.keyboard.isDown("s") then
-        diry = 1
-        moving = true
+        diry = diry + 1
     end
     if love.keyboard.isDown("d") then
-        dirx = 1
-        moving = true
+        dirx = dirx + 1
     end
     if love.keyboard.isDown("a") then
-        dirx = -1
-        moving = true
+        dirx = dirx -1
     end
     if love.keyboard.isDown("space") then
-        table.insert(Entitylist, Entities.newEnemy(love.math.random(0,WIDTH), love.math.random(0,HEIGHT), 2.31))
+        table.insert(Entitylist, Entities.newEnemy(love.math.random(0,WIDTH), love.math.random(0,HEIGHT), 15))
     end
 
-    -- PLayer friction
-    if not moving then
-        Player.body.velx = Player.body.velx - Player.body.velx * dt * 1.25
-        Player.body.vely = Player.body.vely - Player.body.vely * dt * 1.25
-    end
     -- Player Movement
     Player.body:Intergrate(dt, dirx, diry)
     Player.collider:updatePos(Player.body.x, Player.body.y)
 
     for i = #Entitylist, 1, -1 do
         local entity = Entitylist[i]
-        entity:update(dt, Player.body.x, Player.body.y)
+        entity:update(dt, Player.body)
         if entity.collider:CheckCollision(Player.collider) then
             table.remove(Entitylist, i)
             Player.health = Player.health - 1
         end
     end
-
-
 end
 
 function love.draw()
@@ -91,4 +79,3 @@ function love.draw()
     love.graphics.print("enemys: " .. #Entitylist, 10, 50)
     love.graphics.print("health: " .. Player.health, 10, 70)
 end
-
