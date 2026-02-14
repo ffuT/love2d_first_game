@@ -6,9 +6,17 @@ local Physics ={
         Body.velx = 0
         Body.vely = 0
         Body.acc = a
-        Body.maxSpeed = 3.116
+        Body.maxSpeed = 3.816
 
         function Body:Intergrate(dt, dirx, diry)
+
+            -- normalize directions
+            local len = math.sqrt(dirx * dirx + diry * diry)
+            if len > 0 then
+                dirx = dirx / len
+                diry = diry / len
+            end
+
             self.velx = self.velx + self.acc * dt * dirx
             self.vely = self.vely + self.acc * dt * diry
 
@@ -19,24 +27,28 @@ local Physics ={
                 self.vely = self.maxSpeed
             end
             if self.velx < -self.maxSpeed then
-                self.velx = -self.maxSpeed 
+                self.velx = -self.maxSpeed
             end
             if self.vely < -self.maxSpeed then
-                self.vely = -self.maxSpeed 
+                self.vely = -self.maxSpeed
             end
 
             self.x = self.x + self.velx * dt * 100
             self.y = self.y + self.vely * dt * 100
-            
-            if math.abs(self.velx) > 0.0114 * self.acc then 
-                self.velx = self.velx - self.velx * dt * self.acc / 9
-            else
-                self.velx = 0
+
+            if math.abs(dirx) <= 0 then -- ignore friction when moving
+                if math.abs(self.velx) > 0.0514 * self.acc * dt then
+                    self.velx = self.velx - self.velx * dt * self.acc / 9
+                else
+                    self.velx = 0
+                end
             end
-            if math.abs(self.vely) > 0.0114 * self.acc then
-                self.vely = self.vely - self.vely * dt * self.acc / 9
-            else
-                self.vely = 0
+            if math.abs(diry) <= 0 then -- same for y-axis
+                if math.abs(self.vely) > 0.0514 * self.acc * dt then
+                    self.vely = self.vely - self.vely * dt * self.acc / 9
+                else
+                    self.vely = 0
+                end
             end
         end
         return Body

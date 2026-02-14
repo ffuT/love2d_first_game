@@ -3,7 +3,7 @@ local Physics = require("Physics")
 local Entities = {
     newEnemy = function(x, y, health) 
         local Enemy = {}
-        Enemy.body = Physics.newBody(x, y, 4.20)
+        Enemy.body = Physics.newBody(x, y, 13.20)
         Enemy.radius = 10
         Enemy.collider = Physics.newSphereCollider(x, y, Enemy.radius)
         Enemy.health = health
@@ -25,13 +25,7 @@ local Entities = {
             local predictiondirx = -self.body.velx * predictiontime + dirx
             local predictiondiry = -self.body.vely * predictiontime + diry
 
-            len = math.sqrt(predictiondirx * predictiondirx + predictiondiry * predictiondiry)
-            if len > 0 then
-                predictiondirx = predictiondirx / len
-                predictiondiry = predictiondiry / len
-            end
-
-            -- actually update movement from calculated directions
+            -- update movement from calculated directions
             self.body:Intergrate(dt, predictiondirx, predictiondiry)
             -- update collision sphere
             self.collider:updatePos(self.body.x, self.body.y)
