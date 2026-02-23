@@ -6,19 +6,25 @@ local Physics ={
         Body.velx = 0
         Body.vely = 0
         Body.acc = a
-        Body.maxSpeed = 3.816
+        Body.maxSpeed = 3.716
 
         function Body:Intergrate(dt, dirx, diry)
 
             -- normalize directions
             local len = math.sqrt(dirx * dirx + diry * diry)
-            if len > 0 then
+            if len > 1 then
                 dirx = dirx / len
                 diry = diry / len
             end
 
             self.velx = self.velx + self.acc * dt * dirx
             self.vely = self.vely + self.acc * dt * diry
+
+            local vellen = math.sqrt(self.velx * self.velx + self.vely * self.vely)
+            if vellen > self.maxSpeed then
+                self.velx = self.velx / (vellen / self.maxSpeed)
+                self.vely = self.vely / (vellen / self.maxSpeed)
+            end
 
             if self.velx > self.maxSpeed then
                 self.velx = self.maxSpeed

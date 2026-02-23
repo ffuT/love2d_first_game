@@ -43,13 +43,26 @@ function love.update(dt)
     if love.keyboard.isDown("a") then
         dirx = dirx -1
     end
-    if love.keyboard.isDown("space") then
-        table.insert(Entitylist, Entities.newEnemy(love.math.random(0,WIDTH), love.math.random(0,HEIGHT), 20))
+    if love.keyboard.isDown("left") then
+
+    end
+    if love.keyboard.isDown("right") then
+
+    end
+    if love.keyboard.isDown("up") then
+
+    end
+    if love.keyboard.isDown("down") then
+
     end
 
     -- Player Movement
     Player.body:Intergrate(dt, dirx, diry)
     Player.collider:updatePos(Player.body.x, Player.body.y)
+
+    if love.math.random(10) == 1 then
+        table.insert(Entitylist, Entities.newEnemy(love.math.random(0,WIDTH), love.math.random(0,HEIGHT), 20))
+    end
 
     for i = #Entitylist, 1, -1 do
         local entity = Entitylist[i]
@@ -66,7 +79,6 @@ function love.draw()
     love.graphics.clear()
 
     love.graphics.setBackgroundColor(bgColor)
-
     
     -- draw entities
     for _, entity in ipairs(Entitylist) do

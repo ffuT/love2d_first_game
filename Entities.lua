@@ -4,7 +4,7 @@ local Entities = {
     newEnemy = function(x, y, health) 
         local Enemy = {}
         Enemy.body = Physics.newBody(x, y, 13.20)
-        Enemy.radius = 10
+        Enemy.radius = 15
         Enemy.collider = Physics.newSphereCollider(x, y, Enemy.radius)
         Enemy.health = health
 
