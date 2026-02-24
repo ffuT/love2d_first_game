@@ -8,7 +8,7 @@ local Physics ={
         Body.acc = a
         Body.maxSpeed = 3.716
 
-        function Body:Intergrate(dt, dirx, diry)
+        function Body:integrate(dt, dirx, diry)
 
             -- normalize directions
             local len = math.sqrt(dirx * dirx + diry * diry)
