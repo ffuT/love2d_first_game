@@ -52,11 +52,11 @@ function love.update(dt)
         Player.aimx, Player.aimy = 0, 0
     end
 
-    for index, bullet in ipairs(BulletActive) do
-        bullet.x = bullet.x + 1200 * dt * bullet.xv
-        bullet.y = bullet.y + 1200 * dt * bullet.yv
-        if bullet.x > WIDTH or bullet.x < 0 or bullet.y > HEIGHT or bullet.y < 0 then
-            killBullet(index)
+    for i = #BulletActive, 1, -1 do
+        BulletActive[i].x = BulletActive[i].x + 1200 * dt * BulletActive[i].xv
+        BulletActive[i].y = BulletActive[i].y + 1200 * dt * BulletActive[i].yv
+        if BulletActive[i].x > WIDTH or BulletActive[i].x < 0 or BulletActive[i].y > HEIGHT or BulletActive[i].y < 0 then
+            killBullet(i)
         end
     end
 
