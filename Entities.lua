@@ -23,13 +23,14 @@ Entities.newEnemy = function(x, y, health)
         -- time it will take to reach target
         local predictiontime = (len / self.body.maxSpeed)
 
-        -- take oposite of own vel + target gives overshoort prediciton
-        local predictiondirx = -self.body.velx * predictiontime + dirx
-        local predictiondiry = -self.body.vely * predictiontime + diry
+        local overshootaccuracy = 0.88 -- lower value = bad tracking
 
-        -- update movement from calculated directions
+        -- take oposite of own vel + target gives overshoot prediciton
+        local predictiondirx = -self.body.velx * overshootaccuracy * predictiontime + dirx
+        local predictiondiry = -self.body.vely * overshootaccuracy * predictiontime + diry
+
+        -- update pos
         self.body:integrate(dt, predictiondirx, predictiondiry)
-        -- update collision sphere
         self.collider:updatePos(self.body.x, self.body.y)
     end
 
@@ -41,6 +42,11 @@ Entities.newPlayer = function()
         health = 100,
         body = Physics.newBody(WIDTH / 2, HEIGHT / 2, 20.25),
         collider = Physics.newSphereCollider(WIDTH / 2, HEIGHT / 2, 25),
+        firing = false,
+        aimx = 0,
+        aimy = 0,
+        shootdelay = 0.2,
+        lastshot = 0
     }
     Player.body.maxSpeed = 3.2069
 
@@ -62,27 +68,66 @@ Entities.newPlayer = function()
         if love.keyboard.isDown("a") then
             dirx = dirx - 1
         end
-        if love.keyboard.isDown("left") then
 
-        end
-        if love.keyboard.isDown("right") then
-
-        end
-        if love.keyboard.isDown("up") then
-
-        end
-        if love.keyboard.isDown("down") then
-
+        self.lastshot = self.lastshot + dt
+        if self.lastshot > self.shootdelay then
+            if love.keyboard.isDown("left") then
+                self.firing = true
+                self.aimx = -1
+            end
+            if love.keyboard.isDown("right") then
+                self.firing = true
+                self.aimx = 1
+            end
+            if love.keyboard.isDown("up") then
+                self.firing = true
+                self.aimy = -1
+            end
+            if love.keyboard.isDown("down") then
+                self.firing = true
+                self.aimy = 1
+            end
+            if self.firing then
+                self.lastshot = 0
+            end
         end
 
         -- Player Movement
         Player.body:integrate(dt, dirx, diry)
         Player.collider:updatePos(Player.body.x, Player.body.y)
-        
     end
 
-    
+    function Player:keypressed(key)
+        if self.lastshot > self.shootdelay then
+            if key == "left" then
+                self.firing = true
+                self.aimx = -1
+            end
+            if key == "right" then
+                self.firing = true
+                self.aimx = 1
+            end
+            if key == "up" then
+                self.firing = true
+                self.aimy = -1
+            end
+            if key == "down" then
+                self.firing = true
+                self.aimy = 1
+            end
+            if self.firing then
+                self.lastshot = 0
+            end
+        end
+    end
+
+    function Player:draw()
+        love.graphics.setColor(.1, .43, .91)
+        love.graphics.rectangle("fill", Player.body.x - 20, Player.body.y - 20, 40, 40)
+    end
+
     return Player
+
 end
 
 return Entities
