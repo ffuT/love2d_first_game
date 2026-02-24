@@ -51,7 +51,7 @@ function love.update(dt)
         Player.firing = false
         Player.aimx, Player.aimy = 0, 0
     end
-
+    
     for i = #BulletActive, 1, -1 do
         BulletActive[i].x = BulletActive[i].x + 1200 * dt * BulletActive[i].xv
         BulletActive[i].y = BulletActive[i].y + 1200 * dt * BulletActive[i].yv
