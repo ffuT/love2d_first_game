@@ -1,9 +1,14 @@
 local Entities = require("Entities")
 
+local Player
+local Enemylist = {}
+
+local BulletPool = {}
+local BulletActive = {}
+
 local canvas
 local crtShader
 local bgColor = { 0.23, 0.23, 0.23 }
-
 
 local function spawnBullet(x, y, xv, yv)
     local b = table.remove(BulletPool)
@@ -32,10 +37,6 @@ function love.load()
     canvas = love.graphics.newCanvas()
     crtShader = love.graphics.newShader("Shaders/crt.glsl")
 
-    Enemylist = {}
-    BulletPool = {}
-    BulletActive = {}
-
     Player = Entities.newPlayer()
 end
 
@@ -57,8 +58,6 @@ function love.update(dt)
         if bullet.x > WIDTH or bullet.x < 0 or bullet.y > HEIGHT or bullet.y < 0 then
             killBullet(index)
         end
-        print(#BulletPool)
-        print(#BulletActive)
     end
 
     for i = #Enemylist, 1, -1 do
