@@ -18,6 +18,8 @@ function love.load()
     crtShader = love.graphics.newShader("Shaders/crt.glsl")
 
     Player = Entities.newPlayer()
+    -- TODO male enemypool like with bullets perhaps inside Entities
+        -- it will fix bullets getting removed from dead enimies
     Enemylist = {}
     points = 0
 end
