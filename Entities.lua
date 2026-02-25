@@ -10,6 +10,10 @@ Entities.newEnemy = function(x, y, health)
         health = health,
     }
 
+    function Enemy:takeDamage(damage)
+        self.health = self.health - damage
+    end
+
     function Enemy:draw()
         love.graphics.setColor(0.9, 0.1, 0.1)
         love.graphics.ellipse("fill", self.body.x, self.body.y, self.radius, self.radius);
@@ -45,7 +49,7 @@ Entities.newPlayer = function()
         firing = false,
         aimx = 0,
         aimy = 0,
-        shootdelay = 0.2,
+        shootdelay = 0.1,
         lastshot = 0
     }
     Player.body.maxSpeed = 3.2069

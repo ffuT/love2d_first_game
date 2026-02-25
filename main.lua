@@ -1,32 +1,12 @@
 local Entities = require("Entities")
+local Bullets = require("Bullets")
 
 local Player
 local Enemylist = {}
 
-local BulletPool = {}
-local BulletActive = {}
-
 local canvas
 local crtShader
 local bgColor = { 0.23, 0.23, 0.23 }
-
-local function spawnBullet(x, y, xv, yv)
-    local b = table.remove(BulletPool)
-    if not b then
-        b = {}
-    end
-    b.x, b.y, b.xv, b.yv = x, y, xv, yv
-    b.alive = true
-    table.insert(BulletActive, b)
-end
-
-local function killBullet(i)
-    local b = BulletActive[i]
-    b.alive = false
-    BulletActive[i] = BulletActive[#BulletActive]
-    BulletActive[#BulletActive] = nil
-    table.insert(BulletPool, b)
-end
 
 function love.load()
     WIDTH = 1440
@@ -42,32 +22,35 @@ end
 
 function love.update(dt)
     if love.math.random(10) == 1 then
-        table.insert(Enemylist, Entities.newEnemy(love.math.random(0, WIDTH), love.math.random(0, HEIGHT), 20))
+        table.insert(Enemylist, Entities.newEnemy(love.math.random(0, WIDTH), love.math.random(0, HEIGHT), 10))
     end
 
     Player:update(dt);
+
+    Bullets:update(dt, Enemylist)
+
     if Player.firing then
-        spawnBullet(Player.body.x, Player.body.y, Player.aimx, Player.aimy)
+        Bullets:spawnBullet(Player.body.x, Player.body.y, Player.aimx, Player.aimy)
         Player.firing = false
         Player.aimx, Player.aimy = 0, 0
-    end
-    
-    for i = #BulletActive, 1, -1 do
-        BulletActive[i].x = BulletActive[i].x + 1200 * dt * BulletActive[i].xv
-        BulletActive[i].y = BulletActive[i].y + 1200 * dt * BulletActive[i].yv
-        if BulletActive[i].x > WIDTH or BulletActive[i].x < 0 or BulletActive[i].y > HEIGHT or BulletActive[i].y < 0 then
-            killBullet(i)
-        end
     end
 
     for i = #Enemylist, 1, -1 do
         local entity = Enemylist[i]
+
+        if entity.health <= 0 then
+            table.remove(Enemylist, i)
+            goto continue
+        end
+
         entity:update(dt, Player.body)
         -- on contact delete self + dmg player
         if entity.collider:CheckCollision(Player.collider) then
-            table.remove(Enemylist, i)
             Player.health = Player.health - 1
+            table.remove(Enemylist, i)
+            goto continue
         end
+        ::continue::
     end
 end
 
@@ -82,11 +65,8 @@ function love.draw()
         entity:draw()
     end
 
-    for _, bullet in ipairs(BulletActive) do
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.ellipse("fill", bullet.x, bullet.y, 5, 5);
-    end
-
+    -- draw bullets
+    Bullets:draw()
 
     -- draw player
     Player:draw()
