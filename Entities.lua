@@ -76,6 +76,7 @@ Entities.newPlayer = function()
         self.lastshot = self.lastshot + dt
         if self.lastshot > self.shootdelay then
             if love.keyboard.isDown("left") then
+                -- make a function for setting firing call it in all cases
                 self.firing = true
                 self.aimx = -1.0
             end

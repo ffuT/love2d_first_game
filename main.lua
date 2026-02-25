@@ -18,14 +18,14 @@ function love.load()
     crtShader = love.graphics.newShader("Shaders/crt.glsl")
 
     Player = Entities.newPlayer()
-    -- TODO male enemypool like with bullets perhaps inside Entities
+    -- TODO make enemypool like with bullets perhaps inside Entities
         -- it will fix bullets getting removed from dead enimies
     Enemylist = {}
     points = 0
 end
 
 function love.update(dt)
-    if love.math.random(10) == 1 then
+    if love.math.random(10) == 1 then --fps dependant needs fix
         table.insert(Enemylist, Entities.newEnemy(love.math.random(0, WIDTH), love.math.random(0, HEIGHT), 10))
     end
 
@@ -35,7 +35,7 @@ function love.update(dt)
 
     if Player.firing then
         for i = 1, love.math.random(3, 5) , 1 do
-            local theta = math.sin(math.rad(love.math.random(-12, 12)))
+            local theta = math.sin(math.rad(love.math.random(-12, 12))) -- [-12:12] = 24deg window spread
             local phi = math.sin(math.rad(love.math.random(-12, 12)))
             Bullets:spawnBullet(Player.body.x, Player.body.y, Player.aimx + theta, Player.aimy + phi)
         end
@@ -58,7 +58,6 @@ function love.update(dt)
         if enemy.collider:CheckCollision(Player.collider) then
             Player.health = Player.health - 1
             table.remove(Enemylist, i)
-            goto continue
         end
         ::continue::
     end
@@ -70,15 +69,12 @@ function love.draw()
     love.graphics.clear()
     love.graphics.setBackgroundColor(bgColor)
 
-    -- draw entities
     for _, entity in ipairs(Enemylist) do
         entity:draw()
     end
 
-    -- draw bullets
     Bullets:draw()
 
-    -- draw player
     Player:draw()
 
     love.graphics.setColor(1, 1, 1, 1)

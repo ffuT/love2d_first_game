@@ -4,13 +4,15 @@ Physics.newBody = function(x,y,a)
     local Body = {
         x = x,
         y = y,
+        acc = a,
         velx = 0,
         vely = 0,
-        acc = a,
         maxSpeed = 3.716
     }
 
     function Body:integrate(dt, dirx, diry)
+        local pixelPerSecScale = 100
+        local frictionCoeff = 0.0514
 
         -- normalize directions
         local len = math.sqrt(dirx * dirx + diry * diry)
@@ -28,31 +30,18 @@ Physics.newBody = function(x,y,a)
             self.vely = self.vely / (vellen / self.maxSpeed)
         end
 
-        if self.velx > self.maxSpeed then
-            self.velx = self.maxSpeed
-        end
-        if self.vely > self.maxSpeed then
-            self.vely = self.maxSpeed
-        end
-        if self.velx < -self.maxSpeed then
-            self.velx = -self.maxSpeed
-        end
-        if self.vely < -self.maxSpeed then
-            self.vely = -self.maxSpeed
-        end
+        self.x = self.x + self.velx * dt * pixelPerSecScale
+        self.y = self.y + self.vely * dt * pixelPerSecScale
 
-        self.x = self.x + self.velx * dt * 100
-        self.y = self.y + self.vely * dt * 100
-
-        if math.abs(dirx) <= 0 then -- ignore friction when moving
-            if math.abs(self.velx) > 0.0514 * self.acc * dt then
+        if math.abs(dirx) == 0 then -- add friction when not moving
+            if math.abs(self.velx) > frictionCoeff * self.acc * dt then
                 self.velx = self.velx - self.velx * dt * self.acc / 9
             else
                 self.velx = 0
             end
         end
-        if math.abs(diry) <= 0 then -- same for y-axis
-            if math.abs(self.vely) > 0.0514 * self.acc * dt then
+        if math.abs(diry) == 0 then -- same for y-axis
+            if math.abs(self.vely) > frictionCoeff * self.acc * dt then
                 self.vely = self.vely - self.vely * dt * self.acc / 9
             else
                 self.vely = 0
@@ -69,9 +58,9 @@ Physics.newSphereCollider = function(x, y, r)
         r = r
     }
 
-    function Collider:updatePos(x, y)
-        self.x = x
-        self.y = y
+    function Collider:updatePos(_x, _y)
+        self.x = _x
+        self.y = _y
     end
 
     function Collider:CheckCollision(other) -- sphere only
