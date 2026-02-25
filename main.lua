@@ -1,8 +1,8 @@
 local Entities = require("Entities")
 local Bullets = require("Bullets")
 
+local Enemylist
 local Player
-local Enemylist = {}
 
 local canvas
 local crtShader
@@ -18,6 +18,7 @@ function love.load()
     crtShader = love.graphics.newShader("Shaders/crt.glsl")
 
     Player = Entities.newPlayer()
+    Enemylist = {}
 end
 
 function love.update(dt)
@@ -40,11 +41,12 @@ function love.update(dt)
 
         if entity.health <= 0 then
             table.remove(Enemylist, i)
+            -- encrease pointssss
             goto continue
         end
 
         entity:update(dt, Player.body)
-        -- on contact delete self + dmg player
+        
         if entity.collider:CheckCollision(Player.collider) then
             Player.health = Player.health - 1
             table.remove(Enemylist, i)

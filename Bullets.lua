@@ -34,6 +34,7 @@ function Bullets:update(dt, Enemylist)
         b.collider.y = b.collider.y + 1200 * dt * b.yv
         if b.collider.x > WIDTH or b.collider.x < 0 or b.collider.y > HEIGHT or b.collider.y < 0 then
             self:killBullet(i)
+            goto continue
         end
         for j = #Enemylist, 1, -1 do
             if b.collider:CheckCollision(Enemylist[j].collider) then
