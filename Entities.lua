@@ -47,49 +47,49 @@ Entities.newPlayer = function()
         body = Physics.newBody(WIDTH / 2, HEIGHT / 2, 20.25),
         collider = Physics.newSphereCollider(WIDTH / 2, HEIGHT / 2, 25),
         firing = false,
-        aimx = 0,
-        aimy = 0,
-        shootdelay = 0.1,
-        lastshot = 0
+        aimx = 0.0,
+        aimy = 0.0,
+        shootdelay = 0.33,
+        lastshot = 0.0
     }
     Player.body.maxSpeed = 3.2069
 
     function Player:update(dt)
         -- Player Accel
-        local dirx = 0
-        local diry = 0
+        local dirx = 0.0
+        local diry = 0.0
 
         -- keyboard handling --
         if love.keyboard.isDown("w") then
-            diry = diry - 1
+            diry = diry - 1.0
         end
         if love.keyboard.isDown("s") then
-            diry = diry + 1
+            diry = diry + 1.0
         end
         if love.keyboard.isDown("d") then
-            dirx = dirx + 1
+            dirx = dirx + 1.0
         end
         if love.keyboard.isDown("a") then
-            dirx = dirx - 1
+            dirx = dirx - 1.0
         end
 
         self.lastshot = self.lastshot + dt
         if self.lastshot > self.shootdelay then
             if love.keyboard.isDown("left") then
                 self.firing = true
-                self.aimx = -1
+                self.aimx = -1.0
             end
             if love.keyboard.isDown("right") then
                 self.firing = true
-                self.aimx = 1
+                self.aimx = 1.0
             end
             if love.keyboard.isDown("up") then
                 self.firing = true
-                self.aimy = -1
+                self.aimy = -1.0
             end
             if love.keyboard.isDown("down") then
                 self.firing = true
-                self.aimy = 1
+                self.aimy = 1.0
             end
             if self.firing then
                 self.lastshot = 0

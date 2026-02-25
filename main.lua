@@ -3,22 +3,23 @@ local Bullets = require("Bullets")
 
 local Enemylist
 local Player
+local points
 
 local canvas
 local crtShader
-local bgColor = { 0.23, 0.23, 0.23 }
+local bgColor = {0.23, 0.23, 0.23}
 
 function love.load()
     WIDTH = 1440
     HEIGHT = 810
 
-    --love.window.setVSync(0)
     love.window.setMode(WIDTH, HEIGHT)
     canvas = love.graphics.newCanvas()
     crtShader = love.graphics.newShader("Shaders/crt.glsl")
 
     Player = Entities.newPlayer()
     Enemylist = {}
+    points = 0
 end
 
 function love.update(dt)
@@ -31,23 +32,28 @@ function love.update(dt)
     Bullets:update(dt, Enemylist)
 
     if Player.firing then
-        Bullets:spawnBullet(Player.body.x, Player.body.y, Player.aimx, Player.aimy)
+        for i = 1, love.math.random(3, 5) , 1 do
+            local theta = math.sin(math.rad(love.math.random(-12, 12)))
+            local phi = math.sin(math.rad(love.math.random(-12, 12)))
+            Bullets:spawnBullet(Player.body.x, Player.body.y, Player.aimx + theta, Player.aimy + phi)
+        end
+
         Player.firing = false
-        Player.aimx, Player.aimy = 0, 0
+        Player.aimx, Player.aimy = 0.0, 0.0
     end
 
     for i = #Enemylist, 1, -1 do
-        local entity = Enemylist[i]
+        local enemy = Enemylist[i]
 
-        if entity.health <= 0 then
+        if enemy.health <= 0 then
             table.remove(Enemylist, i)
-            -- encrease pointssss
+            points = points + 1
             goto continue
         end
 
-        entity:update(dt, Player.body)
-        
-        if entity.collider:CheckCollision(Player.collider) then
+        enemy:update(dt, Player.body)
+
+        if enemy.collider:CheckCollision(Player.collider) then
             Player.health = Player.health - 1
             table.remove(Enemylist, i)
             goto continue
@@ -72,6 +78,9 @@ function love.draw()
 
     -- draw player
     Player:draw()
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print("POINTS: " .. points, WIDTH/2, 10)
 
     -- draw debug info
     love.graphics.setNewFont(18)

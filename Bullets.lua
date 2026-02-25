@@ -13,8 +13,9 @@ function Bullets:spawnBullet(x, y, xv, yv)
             damage = 10
         }
     end
-    b.collider.x, b.collider.y = x, y
-    b.xv, b.yv = xv, yv
+    b.collider.x, b.collider.y = x + love.math.random(-5, 5), y + love.math.random(-5, 5)
+    b.xv, b.yv = xv , yv
+    b.speedScale = 0.85 + love.math.random(1,4) / 10 --random bullet speed
     b.alive = true
     table.insert(self.BulletActive, b)
 end
@@ -30,8 +31,14 @@ end
 function Bullets:update(dt, Enemylist)
     for i = #self.BulletActive, 1, -1 do
         local b = self.BulletActive[i]
-        b.collider.x = b.collider.x + 1200 * dt * b.xv
-        b.collider.y = b.collider.y + 1200 * dt * b.yv
+
+        -- normalize bullet speed
+        local len = math.sqrt(b.xv * b.xv + b.yv * b.yv)
+        b.xv = b.xv / len * b.speedScale
+        b.yv = b.yv / len * b.speedScale
+
+        b.collider.x = b.collider.x + 1000 * dt * b.xv
+        b.collider.y = b.collider.y + 1000 * dt * b.yv
         if b.collider.x > WIDTH or b.collider.x < 0 or b.collider.y > HEIGHT or b.collider.y < 0 then
             self:killBullet(i)
             goto continue
