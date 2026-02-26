@@ -16,7 +16,7 @@ function Bullets:spawnBullet(x, y, xv, yv)
     b.collider.x, b.collider.y = x + love.math.random(-5, 5), y + love.math.random(-5, 5)
     -- normalize bullet speed
     local len = math.sqrt(xv * xv + yv * yv)
-    local speedScale = 0.85 + love.math.random(1,4) / 10 --random bullet speed
+    local speedScale = love.math.random() * (1.4 - 0.86) + 0.85
     b.xv = xv / len * speedScale
     b.yv = yv / len * speedScale
     table.insert(self.BulletActive, b)

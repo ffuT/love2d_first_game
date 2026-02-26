@@ -1,5 +1,6 @@
 local Entities = require("Entities")
 local Bullets = require("Bullets")
+local Particles = require("Particles")
 
 local Player
 local points
@@ -27,11 +28,18 @@ function love.update(dt)
         Entities:spawnEnemy(love.math.random(0, WIDTH),love.math.random(0, WIDTH))
     end
 
+    if love.keyboard.isDown("r") then -- DEBUG PARTICLE SPAWNER
+        Particles:spawnParticleEffect(500, 500, 0.0, 0.0, Particles.Effects.explosion)
+    end
+
     Player:update(dt);
+
+    Particles:update(dt)
 
     Bullets:update(dt, Entities.Enemylist)
 
     if Player.firing then
+        Particles:spawnParticleEffect(Player.body.x, Player.body.y, Player.aimx, Player.aimy, Particles.Effects.muzzleFlash)
         for i = 1, love.math.random(3, 5) , 1 do
             local theta = math.sin(math.rad(love.math.random(-12, 12))) -- [-12:12] = 24deg window spread
             local phi = math.sin(math.rad(love.math.random(-12, 12)))
@@ -54,6 +62,8 @@ function love.draw()
     Entities:drawEnimies()
 
     Bullets:draw()
+
+    Particles:draw()
 
     Player:draw()
 

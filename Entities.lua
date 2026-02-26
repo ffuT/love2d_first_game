@@ -1,4 +1,5 @@
 local Physics = require("Physics")
+local Particles = require("Particles")
 
 local Entities = {
     Enemylist = {},
@@ -16,6 +17,7 @@ Entities.newEnemy = function(x, y, health)
 
     function Enemy:takeDamage(damage, index)
         self.health = self.health - damage
+        Particles:spawnParticleEffect(self.collider.x, self.collider.y, 0, 0, Particles.Effects.explosion)
         if self.health <= 0 then
             Entities:killEnemy(index)
         end
