@@ -39,7 +39,7 @@ function Bullets:update(dt, Enemylist)
 
         for j = #Enemylist, 1, -1 do
             if b.collider:CheckCollision(Enemylist[j].collider) then
-                Enemylist[j]:takeDamage(b.damage)
+                Enemylist[j]:takeDamage(b.damage, j)
                 self:killBullet(i)
                 goto continue
             end

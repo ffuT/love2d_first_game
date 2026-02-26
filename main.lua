@@ -1,7 +1,6 @@
 local Entities = require("Entities")
 local Bullets = require("Bullets")
 
-local Enemylist
 local Player
 local points
 
@@ -18,20 +17,19 @@ function love.load()
     crtShader = love.graphics.newShader("Shaders/crt.glsl")
 
     Player = Entities.newPlayer()
-    -- TODO make enemypool like with bullets perhaps inside Entities
-        -- it will fix bullets getting removed from dead enimies
-    Enemylist = {}
     points = 0
 end
 
 function love.update(dt)
+    points = points + Entities:getPoints() -- get current pointpool
+
     if love.math.random(10) == 1 then --fps dependant needs fix
-        table.insert(Enemylist, Entities.newEnemy(love.math.random(0, WIDTH), love.math.random(0, HEIGHT), 10))
+        Entities:spawnEnemy(love.math.random(0, WIDTH),love.math.random(0, WIDTH))
     end
 
     Player:update(dt);
 
-    Bullets:update(dt, Enemylist)
+    Bullets:update(dt, Entities.Enemylist)
 
     if Player.firing then
         for i = 1, love.math.random(3, 5) , 1 do
@@ -44,23 +42,7 @@ function love.update(dt)
         Player.aimx, Player.aimy = 0.0, 0.0
     end
 
-    for i = #Enemylist, 1, -1 do
-        local enemy = Enemylist[i]
-
-        if enemy.health <= 0 then
-            table.remove(Enemylist, i)
-            points = points + 1
-            goto continue
-        end
-
-        enemy:update(dt, Player.body)
-
-        if enemy.collider:CheckCollision(Player.collider) then
-            Player.health = Player.health - 1
-            table.remove(Enemylist, i)
-        end
-        ::continue::
-    end
+    Entities:updateEnemies(dt, Player)
 end
 
 function love.draw()
@@ -69,9 +51,7 @@ function love.draw()
     love.graphics.clear()
     love.graphics.setBackgroundColor(bgColor)
 
-    for _, entity in ipairs(Enemylist) do
-        entity:draw()
-    end
+    Entities:drawEnimies()
 
     Bullets:draw()
 
@@ -86,7 +66,7 @@ function love.draw()
     love.graphics.print("fps: " .. love.timer.getFPS(), 10, 10)
     love.graphics.print("pos: " ..
     string.format("%.1f", Player.body.x) .. " " .. string.format("%.2f", Player.body.y), 10, 30)
-    love.graphics.print("enemys: " .. #Enemylist, 10, 50)
+    love.graphics.print("enemys: " .. #Entities.Enemylist, 10, 50)
     love.graphics.print("health: " .. Player.health, 10, 70)
 
     -- stop drawing, set shader and render

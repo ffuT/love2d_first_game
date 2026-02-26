@@ -1,6 +1,10 @@
 local Physics = require("Physics")
 
-local Entities = {}
+local Entities = {
+    Enemylist = {},
+    Enemypool = {},
+    points = 0
+}
 
 Entities.newEnemy = function(x, y, health)
     local Enemy = {
@@ -10,8 +14,11 @@ Entities.newEnemy = function(x, y, health)
         health = health,
     }
 
-    function Enemy:takeDamage(damage)
+    function Enemy:takeDamage(damage, index)
         self.health = self.health - damage
+        if self.health <= 0 then
+            Entities:killEnemy(index)
+        end
     end
 
     function Enemy:draw()
@@ -39,6 +46,51 @@ Entities.newEnemy = function(x, y, health)
     end
 
     return Enemy
+end
+
+function Entities:spawnEnemy(x, y)
+    local e = table.remove(self.Enemypool)
+    if not e then
+        e = Entities.newEnemy(x, y, 10)
+    end
+    e.health = 10
+    e.body.velx, e.body.vely = 0, 0
+    e.body.x, e.body.y = x, y
+    e.collider:updatePos(x, y)
+    table.insert(self.Enemylist, e)
+end
+
+function Entities:killEnemy(i)
+    local e = self.Enemylist[i]
+    self.Enemylist[i] = self.Enemylist[#self.Enemylist]
+    self.Enemylist[#self.Enemylist] = nil
+    table.insert(self.Enemypool, e)
+    self.points = self.points + 1
+end
+
+function Entities:getPoints()
+    local p = self.points
+    self.points = 0
+    return p
+end
+
+function Entities:updateEnemies(dt, player)
+        for i = #self.Enemylist, 1, -1 do
+        local enemy = Entities.Enemylist[i]
+
+        enemy:update(dt, player.body)
+
+        if enemy.collider:CheckCollision(player.collider) then
+            player.health = player.health - 1
+            Entities:killEnemy(i)
+        end
+    end
+end
+
+function Entities:drawEnimies()
+    for _, enemy in ipairs(self.Enemylist) do
+        enemy:draw()
+    end    
 end
 
 Entities.newPlayer = function()
